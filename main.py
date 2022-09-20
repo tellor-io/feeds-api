@@ -5,13 +5,42 @@ from fastapi import FastAPI
 from telliot_feeds.utils.decode import decode_query_data
 from eth_abi import decode_abi
 from eth_utils.conversions import to_bytes
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+from typing import Optional
+from fastapi import Body
+
 
 app = FastAPI()
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+class SubmitValueData(BaseModel):
+    byte_str: Optional[str]
+    sol_type: Optional[str]
 
 @app.get("/")
 def read_root():
     return {"Hello": "World"}
+
+
+@app.post("/decode/submit_value_bytes/")
+def decode_svb(payload: SubmitValueData = Body(...)):
+    try:
+        print(payload.byte_str)
+        print(payload.sol_type)
+        svb = to_bytes(hexstr=payload.byte_str)
+        print("svb", svb)
+        decoded = decode_abi([payload.sol_type], svb)
+        print("decoded", decoded)
+        return {"decoded": decoded}
+    except Exception as e:
+        return {"error": str(e)}
 
 
 @app.post("/decode/query_data/")
@@ -32,18 +61,3 @@ def decode_qd(query_data_str: str):
     except Exception as e:
         return {"error": str(e)}
 
-
-@app.post("/decode/submit_value_bytes/")
-def decode_svb(submit_value_bytes_str: str, abi_type: str):
-    try:
-        svb = to_bytes(hexstr=submit_value_bytes_str)
-        print("svb", svb)
-        decoded = decode_abi([abi_type], svb)
-        print("decoded", decoded)
-    except Exception as e:
-        return {"error": str(e)}
-
-    try:
-        return {"decoded": decoded}
-    except Exception as e:
-        return {"error": str(e)}
