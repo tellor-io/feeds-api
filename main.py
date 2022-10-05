@@ -1,3 +1,5 @@
+# delete telliot_homedir if exists
+
 from typing import Union
 import json
 
@@ -9,6 +11,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional
 from fastapi import Body
+
+from utils import generate_docs_msg
 
 
 app = FastAPI()
@@ -57,6 +61,7 @@ def decode_qd(query_data_str: str):
             "query_id": query.query_id.hex(), 
             "query_data": query.query_data.hex(), 
             "query_parameters": query.__dict__.items(),
+            "data_spec": generate_docs_msg(query.__class__.__name__),
         }
     except Exception as e:
         return {"error": str(e)}
