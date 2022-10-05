@@ -2,9 +2,28 @@
 
 from typing import Union
 import json
+import os
+import shutil
+from pathlib import Path
+
+
+try:
+    from telliot_feeds.utils.decode import decode_query_data
+except:
+    # Heroku dynos cycle daily, and this produces a config error in
+    # telliot_core and in chaind_accounts.  This is a workaround.
+
+    # Delete telliot_homedir & chained accounts file if exists
+    telliot_homedir = Path.home() / ("telliot")
+    if os.path.exists(telliot_homedir):
+        shutil.rmtree(telliot_homedir)
+    chained_accounts_file = Path.home() / (".chained_accounts")
+    if os.path.exists(chained_accounts_file):
+        os.remove(chained_accounts_file)
+
+    from telliot_feeds.utils.decode import decode_query_data
 
 from fastapi import FastAPI
-from telliot_feeds.utils.decode import decode_query_data
 from eth_abi import decode_abi
 from eth_utils.conversions import to_bytes
 from fastapi.middleware.cors import CORSMiddleware
