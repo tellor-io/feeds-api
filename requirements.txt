@@ -47,7 +47,7 @@ six==1.16.0
 sniffio==1.3.0
 starlette==0.19.1
 telliot-core==0.1.5
-telliot-feeds @ git+https://github.com/tellor-io/telliot-feeds.git@9ee19ae1ba4b6cd74e920d4847916f3ba89db8c7
+telliot-feeds @ git+https://github.com/tellor-io/telliot-feeds.git@94eaebef62d0aedbeccabe18678562e2122da07ac
 timestamps-tip-scanner @ git+https://github.com/tellor-io/timestamps-tip-scanner.git@refactor-for-api
 toolz==0.12.0
 typing_extensions==4.3.0
