@@ -19,7 +19,7 @@ except:
         shutil.rmtree(telliot_homedir)
     chained_accounts_file = Path.home() / (".chained_accounts")
     if os.path.exists(chained_accounts_file):
-        os.remove(chained_accounts_file)
+        shutil.rmtree(chained_accounts_file)
 
     from telliot_feeds.utils.decode import decode_query_data
 
