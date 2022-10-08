@@ -30,6 +30,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional
 from fastapi import Body
+from timestamps_tip_scanner.call import call
+from timestamps_tip_scanner.timestamps_scanner import run
 
 from utils import generate_docs_msg
 
@@ -85,3 +87,20 @@ def decode_qd(query_data_str: str):
     except Exception as e:
         return {"error": str(e)}
 
+@app.get("/claim-timestamps/{network}/{address}/")
+async def start_block_num(network: str,address: str, start_block: int=None):
+    try:
+        # scan for timestamps
+        run(network, address, start_block)
+        # filter timestamps
+        state = await call(network, address)
+        if not state:
+            return {"message": "No timestamps to claim"}
+    
+        return {
+            "last_scanned_block": state.get_last_scanned_block(),
+            "single_tips": state.single_tips, 
+            "feed_tips": state.feed_tips,
+        }
+    except Exception as e:
+        return {"error": str(e)}
